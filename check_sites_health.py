@@ -23,7 +23,7 @@ def load_urls4check(path):
 def is_server_respond_with_200(url):
     try:
         response = requests.get(url, timeout=5)
-        return bool(response.status_code == 200)
+        return response.ok
     except (requests.ConnectionError, MissingSchema):
         return False
 
@@ -36,7 +36,6 @@ def get_domain_expiration_date(domain_name):
         except TypeError:
             return domain_whois.expiration_date
         except ConnectionResetError:
-            time.sleep(5)
             continue
 
 
