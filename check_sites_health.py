@@ -4,7 +4,6 @@ import requests
 from requests.exceptions import MissingSchema
 import whois
 from datetime import datetime
-import time
 
 
 def is_valid_file(argument_path):
