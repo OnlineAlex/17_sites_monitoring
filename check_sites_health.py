@@ -19,7 +19,7 @@ def load_urls4check(path):
         return file_domains.read().splitlines()
 
 
-def is_server_respond_with_200(url):
+def is_server_respond_ok(url):
     try:
         response = requests.get(url, timeout=5)
         return response.ok
@@ -31,20 +31,21 @@ def get_domain_expiration_date(domain_name):
     while True:
         try:
             domain_whois = whois.whois(domain_name)
-            return domain_whois.expiration_date[0]
-        except TypeError:
-            return domain_whois.expiration_date
         except ConnectionResetError:
             continue
+        if type(domain_whois.expiration_date) is list:
+            return domain_whois.expiration_date[0]
+        else:
+            return domain_whois.expiration_date
 
 
-def is_expiration_date_more_mounth(expiration_date):
+def is_expiration_date_more_days(days, expiration_date):
     paid_term = expiration_date - datetime.now()
-    days_mounth = 31
-    return paid_term.days > days_mounth
+    return paid_term.days > days
 
 
 if __name__ == '__main__':
+    min_paid_days = 31
     parser = argparse.ArgumentParser()
     parser.add_argument(
         'file_path',
@@ -60,6 +61,6 @@ if __name__ == '__main__':
         domain_expiration_date = get_domain_expiration_date(domain)
         print('{:<30} | {!s:^13} | {!s:^16} |'.format(
             domain,
-            is_server_respond_with_200(domain),
-            is_expiration_date_more_mounth(domain_expiration_date)
+            is_server_respond_ok(domain),
+            is_expiration_date_more_days(min_paid_days, domain_expiration_date)
         ))
