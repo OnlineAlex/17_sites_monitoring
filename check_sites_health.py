@@ -54,6 +54,8 @@ def get_domain_expiration_date(domain_name):
 
 
 def is_expiration_date_more_days(days, expiration_date):
+    if not expiration_date:
+        return False
     paid_term = expiration_date - datetime.now()
     return paid_term.days > days
 
